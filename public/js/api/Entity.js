@@ -12,6 +12,7 @@ class Entity {
    * */
   static list( data, callback = f => f ) {
 
+
   }
 
   /**
@@ -40,3 +41,5 @@ class Entity {
   }
 }
 
+Entity.URL = '';
+Entity.HOST = 'http://localhost:8000';
