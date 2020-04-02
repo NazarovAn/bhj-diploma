@@ -1,16 +1,13 @@
-/**
- * Основная функция для совершения запросов
- * на сервер.
- * */
 const createRequest = (options = {}) => {
-    let userMail,
-        userPassword,
+    let responseType = options.responseType,
+        callback = options.callback,
+        headers = options.headers,
         method = options.method,
         url = options.url,
-        headers = options.headers,
-        responseType = options.responseType,
         xhrHeaderKey,
-        xhrHeaderType;
+        xhrHeaderType,
+        userPassword,
+        userMail;
         
     for (const header in headers) {
         xhrHeaderKey = `${header}`;
@@ -30,40 +27,46 @@ const createRequest = (options = {}) => {
       'Heders       - ' + headers + '\n',
       'ResponseType - ' + responseType + '\n',
       'HeaderKey    - ' + xhrHeaderKey + '\n',
-      'HeaderType   - ' + xhrHeaderType + '\n'
+      'HeaderType   - ' + xhrHeaderType + '\n',
+      'Callback     - ' + callback + '\n'
       );
 
     const xhr = new XMLHttpRequest;
 
     xhr.withCredentials = true;
+
     if(responseType != undefined){       
       xhr.responseType = `${responseType}`;
     }
 
     if(method === 'GET'){
-        requestOpen(xhr, method, url, userMail, userPassword);
+        if(userMail === undefined && userPassword === undefined){
+            xhr.open(`${method}`, `${url}`);
+            return
+          } else {             
+              xhr.open(`${method}`, `${url}?mail=${userMail}&password=${userPassword}`);              
+          }
         setHeader(xhr, xhrHeaderKey, xhrHeaderType);
         xhr.send(); 
-    } else {        
+    } else { 
+        xhr.open(`${method}`, `${url}`);    
         let formData = new FormData;
 
         formData.append('mail', `${userMail}`);
         formData.append('password', `${userPassword}`);
-        
-        requestOpen(xhr, method, url);
+
         setHeader(xhr, xhrHeaderKey, xhrHeaderType);
         xhr.send(formData);             
     }
 
     xhr.addEventListener('load', () => {
-        if(xhr.status === 200){
-            options.callback(null, xhr.response);         
+        console.log(xhr);
+        if(xhr.status != 200){
+            console.log(`${xhr.status}: ${xhr.statusText}`);                  
         } else {
-            options.callback(`${xhr.status}: ${xhr.statusText}`); 
+            options.callback(null, xhr.response); 
         }
-    });
-
-    console.log(xhr);
+    });  
     
     return xhr
 }
@@ -71,19 +74,13 @@ const createRequest = (options = {}) => {
 function setHeader(request, key, type){
   if(key === undefined || type === undefined){
     return
-  } else {
+  } else { 
+    console.log('setHeader                  ' + `${key}`, `${type}`);  
     request.setRequestHeader(`${key}`, `${type}`);
   }
 }
 
-function requestOpen(request, requestMethod, requestUrl, mail, password){
-  if(mail === undefined || password === undefined){
-    request.open(`${requestMethod}`, `${requestUrl}`);
-    return
-  } else {
-    request.open(`${requestMethod}`, `${requestUrl}?mail=${mail}&password=${password}`)
-  }
-}
+/////////////////////////////////
 
 // const xhr = createRequest({
 //     url: 'http://localhost:8000', // адрес
@@ -91,8 +88,8 @@ function requestOpen(request, requestMethod, requestUrl, mail, password){
 //       'Content-type': 'application/json' 
 //     },
 //     data: { // произвольные данные, могут отсутствовать
-//       mail: 'ivan@poselok.ru',
-//       password: 'odinodin'
+//       mail: 'demo@demo',
+//       password: 'demo'
 //     },
 //     responseType: 'json', // формат, в котором необходимо выдать результат
 //     method: 'GET', // метод запроса
