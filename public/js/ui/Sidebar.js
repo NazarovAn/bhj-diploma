@@ -18,7 +18,19 @@ class Sidebar {
    * при нажатии на кнопку .sidebar-toggle
    * */
   static initToggleButton() {
-
+    const button = document.querySelector('.sidebar-toggle'),
+          sidebar = document.querySelector('.sidebar-mini');
+    
+    button.addEventListener('click', (elem) => {
+      elem.preventDefault();
+      if(!sidebar.classList.contains('sidebar-open')){
+        sidebar.classList.add('sidebar-open');
+        sidebar.classList.remove('sidebar-collapse');
+      } else {
+        sidebar.classList.remove('sidebar-open');
+        sidebar.classList.add('sidebar-collapse');        
+      }
+    })
   }
 
   /**
@@ -31,5 +43,4 @@ class Sidebar {
   static initAuthLinks() {
 
   }
-
 }

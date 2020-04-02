@@ -10,7 +10,7 @@ class User {
    * локальном хранилище.
    * */
   static setCurrent(user) {
-
+    localStorage.setItem('user', JSON.stringify(user));
   }
 
   /**
@@ -18,7 +18,7 @@ class User {
    * пользователе из локального хранилища.
    * */
   static unsetCurrent() {
-
+    localStorage.removeItem('user');
   }
 
   /**
@@ -26,7 +26,13 @@ class User {
    * из локального хранилища
    * */
   static current() {
-
+    let currentUser = JSON.parse(localStorage.getItem('user'));
+    
+    if(currentUser === null){
+      return undefined
+    } else {
+      return currentUser
+    }
   }
 
   /**
@@ -65,3 +71,8 @@ class User {
 
   }
 }
+
+User.HOST = 'http://localhost:8000';
+User.URL = '/user';
+
+
