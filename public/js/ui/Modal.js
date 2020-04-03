@@ -14,10 +14,10 @@ class Modal {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {    
-    if(this.element === undefined){
+    if(element === undefined){
       throw new Error('Элемент не существует');
     }
-    
+
     this.element = element;
     this.registerEvents();
   }
