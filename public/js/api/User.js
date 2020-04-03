@@ -40,7 +40,22 @@ class User {
    * авторизованном пользователе.
    * */
   static fetch( data, callback = f => f ) {
+    createRequest({
+      data,
+      method: 'GET',
+      url: this.HOST + this.URL + '/current',
+      responseType: 'json',
+      callback: (err, response) => {
+        if(err){
+          console.log(err, response);          
+          return
+        }
 
+        
+        this.setCurrent(data);                                                                              //////////////////////////////////////////////
+         
+      }
+    });
   }
 
   /**
@@ -50,6 +65,24 @@ class User {
    * User.setCurrent.
    * */
   static login( data, callback = f => f ) {
+    createRequest({
+      data,
+      method: 'POST',
+      url: this.HOST + this.URL + '/login',
+      responseType: 'json',
+      callback: (err, response) => {
+        if(err){
+          console.log(err);
+          return
+        } 
+
+        let newUser = {
+          id:   `${response.id}`,
+          name: `${response.name}`
+        }        
+        this.setCurrent(newUser);
+      }
+    })
 
   }
 
@@ -60,7 +93,25 @@ class User {
    * User.setCurrent.
    * */
   static register( data, callback = f => f ) {
+    createRequest({
+      data,
+      method: 'POST',
+      url: `${this.HOST}` + `${this.URL}` + '/register',
+      responseType: 'json',
+      callback: (err, response) => {
+        if(err){          
+          console.log(err);
+          return          
+        }        
 
+        let newUser = {
+          id:   `${response.id}`,
+          name: `${response.name}`
+        }        
+        this.setCurrent(newUser);
+      }
+    })
+    
   }
 
   /**
@@ -68,6 +119,21 @@ class User {
    * выхода необходимо вызвать метод User.unsetCurrent
    * */
   static logout( data, callback = f => f ) {
+    createRequest({
+      data,
+      method: 'POST',
+      url: this.HOST + this.URL + '/logout',
+      responseType: 'json',
+      callback: (err, response) => {
+        if(err){
+          callback(err, response);
+          return
+        }   
+        
+        this.unsetCurrent();                                         ///////////////////////
+        
+      }
+    })
 
   }
 }
@@ -75,4 +141,24 @@ class User {
 User.HOST = 'http://localhost:8000';
 User.URL = '/user';
 
+// const data = {
+//   email: 'test@test.ru',
+//   password: 'abracadabra'
+// }
 
+// User.login( data, ( err, response ) => {});
+
+// const data = {
+//   name: 'Vlad',
+//   email: 'test@test.ru',
+//   password: 'abracadabra'
+// }
+
+// User.register( data, ( err, response ) => {});
+
+// const data = {
+//     id: 'q2dmw450k8k9vuak'
+//   }
+
+
+// User.logout(data, ( err, response ) => {})
