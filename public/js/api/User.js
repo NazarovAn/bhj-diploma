@@ -26,13 +26,8 @@ class User {
    * из локального хранилища
    * */
   static current() {
-    let currentUser = JSON.parse(localStorage.getItem('user'));
-    
-    if(currentUser === null){
-      return undefined
-    } else {
-      return currentUser
-    }
+    let currentUser = localStorage.getItem('user');
+    return currentUser != null? JSON.parse(currentUser) : undefined
   }
 
   /**
@@ -47,15 +42,14 @@ class User {
       responseType: 'json',
       callback: (err, response) => {
         if(err){
-          console.log(err, response);          
+          console.error(err);
+          this.unsetCurrent();
           return
         }
-
-        
-        this.setCurrent(data);                                                                              //////////////////////////////////////////////
-         
+        this.setCurrent(response.user);
+        callback(err, response);
       }
-    });
+    })
   }
 
   /**
@@ -66,24 +60,21 @@ class User {
    * */
   static login( data, callback = f => f ) {
     createRequest({
-      data,
+      data: data.data,
       method: 'POST',
       url: this.HOST + this.URL + '/login',
       responseType: 'json',
       callback: (err, response) => {
         if(err){
           console.log(err);
-          return
-        } 
+          return         
+        }
 
-        let newUser = {
-          id:   `${response.id}`,
-          name: `${response.name}`
-        }        
-        this.setCurrent(newUser);
+        callback(err, response);
+
+        this.setCurrent(response.user);
       }
     })
-
   }
 
   /**
@@ -94,20 +85,24 @@ class User {
    * */
   static register( data, callback = f => f ) {
     createRequest({
-      data,
+      data: data.data,
       method: 'POST',
-      url: `${this.HOST}` + `${this.URL}` + '/register',
+      url: this.HOST + this.URL + '/register',
       responseType: 'json',
       callback: (err, response) => {
         if(err){          
-          console.log(err);
+          console.error(err);
           return          
-        }        
+        }
 
         let newUser = {
-          id:   `${response.id}`,
-          name: `${response.name}`
-        }        
+          id:   response.user.id,
+          name: data.data.name,
+          email: data.data.email
+        }
+
+        callback(err, response);
+
         this.setCurrent(newUser);
       }
     })
@@ -125,40 +120,17 @@ class User {
       url: this.HOST + this.URL + '/logout',
       responseType: 'json',
       callback: (err, response) => {
-        if(err){
+        if(response.success){
           callback(err, response);
+          this.unsetCurrent();   
           return
-        }   
-        
-        this.unsetCurrent();                                         ///////////////////////
-        
+        } else {
+          console.error(err);
+        }
       }
     })
-
   }
 }
 
 User.HOST = 'http://localhost:8000';
 User.URL = '/user';
-
-// const data = {
-//   email: 'test@test.ru',
-//   password: 'abracadabra'
-// }
-
-// User.login( data, ( err, response ) => {});
-
-// const data = {
-//   name: 'Vlad',
-//   email: 'test@test.ru',
-//   password: 'abracadabra'
-// }
-
-// User.register( data, ( err, response ) => {});
-
-// const data = {
-//     id: 'q2dmw450k8k9vuak'
-//   }
-
-
-// User.logout(data, ( err, response ) => {})
