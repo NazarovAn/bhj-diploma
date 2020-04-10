@@ -14,7 +14,7 @@ class Entity {
     return createRequest({
       data,
       method: 'GET',
-      url: Entity.HOST + Entity.URL,
+      url: Entity.HOST + this.URL,
       responseType: 'json',
       callback
     })
@@ -31,7 +31,7 @@ class Entity {
     createRequest({
       data: modifiedData,
       method: 'POST',
-      url: Entity.HOST + Entity.URL,
+      url: Entity.HOST + this.URL,
       responseType: 'json',
       callback
     })
@@ -42,12 +42,12 @@ class Entity {
    * (в зависимости от того, что наследуется от Entity)
    * */
   static get( id = '', data, callback = f => f ) {
-    let modifiedData = Object.assign(data, {id: `${id}`});
+    let modifiedData = Object.assign(data, {id});
 
     createRequest({
       data: modifiedData,
       method: 'GET',
-      url: Entity.HOST + Entity.URL,
+      url: Entity.HOST + this.URL,
       responseType: 'json',
       callback
     })
@@ -59,14 +59,12 @@ class Entity {
    * (в зависимости от того, что наследуется от Entity)
    * */
   static remove( id = '', data, callback = f => f ) {
-    let modifiedData = Object.assign(data, {id: `${id}`, _method: 'DELETE'});
-    console.log(modifiedData);
-    
+    let modifiedData = Object.assign(data, {id, _method: 'DELETE'});
 
     createRequest({
       data: modifiedData,
       method: 'POST',
-      url: Entity.HOST + Entity.URL,
+      url: Entity.HOST + this.URL,
       responseType: 'json',
       callback
     })
