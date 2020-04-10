@@ -27,7 +27,8 @@ class CreateTransactionForm extends AsyncForm {
       }
 
       let accountsList = response.data;
-
+      
+      accountsSelect.innerHTML = '';
       accountsList.forEach((item) => {
         accountsSelect.insertAdjacentHTML('beforeEnd', `<option value="${item.id}">${item.name}</option>`);
       })
