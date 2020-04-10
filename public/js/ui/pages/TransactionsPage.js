@@ -11,14 +11,19 @@ class TransactionsPage {
    * через registerEvents()
    * */
   constructor( element ) {
+    if(!element){
+      throw new Error('Элемент не существует');
+    }
 
+    this.element = element;
+    this.registerEvents();
   }
 
-  /**
+  /**options
    * Вызывает метод render для отрисовки страницы
    * */
   update() {
-
+    this.render(this.lastOptions);    
   }
 
   /**
@@ -28,7 +33,25 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
+    const removeAccountButton = this.element.querySelector('.remove-account');
 
+    removeAccountButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.removeAccount();
+    })
+
+    this.element.addEventListener('click', (e) => {
+      e.preventDefault();
+      let closeButtonsList = this.element.querySelectorAll('.transaction__remove');
+      
+      for (let button of closeButtonsList) {
+        console.log(button.dataset.id + ' id счета в data-id кнопки удаления');
+        
+        if (button === e.target || button.querySelector('.fa') === e.target) {
+          this.removeTransaction(button.dataset.id);
+        }
+      }
+    })
   }
 
   /**
@@ -40,7 +63,15 @@ class TransactionsPage {
    * для обновления приложения
    * */
   removeAccount() {
+    if(this.lastOptions) {    
+      if (confirm('Вы действительно хотите удалить счёт?')) {
+        this.clear();
+        
+      let id = document.querySelector('.active').dataset.id;
 
+      Account.remove( id, {}, () => App.update());
+      }
+    }
   }
 
   /**
@@ -48,8 +79,19 @@ class TransactionsPage {
    * подтверждеия действия (с помощью confirm()).
    * По удалению транзакции вызовите метод App.update()
    * */
-  removeTransaction( id ) {
+  removeTransaction( id ) {                                          //Не работает
+    if (confirm('Вы действительно хотите удалить счёт?')) {          //id транзакции в db.json не записываются, не понимаю почему.
+      Transaction.remove(id, {}, (err, response) => {                //В чем еще может быть проблема не придумал.
+        if(!response.success){                                       //Пробовал сделать альтернативный метод, понял, что не смогу 
+          console.log(err);                                          //удалить данные с сервера.
+          console.log(`response от removeTransaction(${id})`);    
+          console.log(response);         
+          return
+        }                                                               
 
+        App.update();
+      })
+    }
   }
 
   /**
@@ -59,31 +101,71 @@ class TransactionsPage {
    * в TransactionsPage.renderTransactions()
    * */
   render( options ) {
+    if (options) {
+      this.lastOptions = options;     
 
+      Account.get(options.account_id, {}, (err, response) => {
+        if(err){
+          console.error(err);
+        }        
+        
+        this.renderTitle(response);
+      })
+
+      Transaction.list(options, (err, response) => {
+        if (err) {
+          console.error(err);
+          return
+        }
+
+        this.renderTransactions(response.data);
+      })
+    }
   }
-
   /**
    * Очищает страницу. Вызывает
    * TransactionsPage.renderTransactions() с пустым массивом.
    * Устанавливает заголовок: «Название счёта»
    * */
   clear() {
-
+    this.renderTransactions([]);
+    this.renderTitle('Название счёта');
+    this.lastOptions = '';
   }
 
   /**
    * Устанавливает заголовок в элемент .content-title
    * */
-  renderTitle( name ) {
-
+  renderTitle( name ) { console.log(name);  //тоже не получилось, не понимаю почему Account.get присылает success: true и пустой массив.
+    let title = document.querySelector('.active').getElementsByTagName('span')[0].textContent;     //Костыль что бы хоть как-то работало.
+    document.querySelector('.content-title').textContent = title;
   }
 
   /**
    * Форматирует дату в формате 2019-03-10 03:20:41 (строка)
    * в формат «10 марта 2019 г. в 03:20»
-   * */
-  formatDate( date ) {
+   * */  
+   formatDate( date ) {
+    let year = date.slice(0, 4),
+        monthIndex = parseInt(date.slice(5, 7)) - 1,
+        day = date.slice(8, 10),
+        time = date.slice(11, 16),
+        monthsArray = [
+          'января',
+          'февраля',
+          'марта',
+          'апреля',
+          'мая',
+          'июня',
+          'июля',
+          'августа',
+          'сентября',
+          'октября',
+          'ноября',
+          'декабря'
+        ]
 
+    return `${day} ${monthsArray[monthIndex]} ${year} г. в ${time}`
   }
 
   /**
@@ -91,7 +173,27 @@ class TransactionsPage {
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML( item ) {
-
+    return `<div class="transaction transaction_${item.type.toLowerCase()} row">
+              <div class="col-md-7 transaction__details">
+                <div class="transaction__icon">
+                    <span class="fa fa-money fa-2x"></span>
+                </div>
+                <div class="transaction__info">
+                    <h4 class="transaction__title">${item.name}</h4>
+                    <div class="transaction__date">${this.formatDate(item.created_at)}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="transaction__summ">
+                ${item.sum} <span class="currency">₽</span>
+                </div>
+              </div>
+              <div class="col-md-2 transaction__controls">
+                  <button class="btn btn-danger transaction__remove" data-id="${item.account_id}">
+                      <i class="fa fa-trash"></i>  
+                  </button>
+              </div>
+          </div>`
   }
 
   /**
@@ -99,6 +201,12 @@ class TransactionsPage {
    * используя getTransactionHTML
    * */
   renderTransactions( data ) {
+    let contentBox = this.element.querySelector('.content');
 
+    contentBox.innerHTML = '';
+
+    data.forEach((e) => {
+      contentBox.insertAdjacentHTML('beforeEnd', this.getTransactionHTML(e));  
+    })
   }
 }
