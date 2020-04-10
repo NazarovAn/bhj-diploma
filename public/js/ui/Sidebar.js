@@ -23,13 +23,20 @@ class Sidebar {
     
     button.addEventListener('click', (elem) => {
       elem.preventDefault();
-      if(!sidebar.classList.contains('sidebar-open')){
-        sidebar.classList.add('sidebar-open');
-        sidebar.classList.remove('sidebar-collapse');
-      } else {
-        sidebar.classList.remove('sidebar-open');
-        sidebar.classList.add('sidebar-collapse');        
-      }
+      sidebar.classList.toggle('sidebar-open');
+      sidebar.classList.toggle('sidebar-collapse');
+      
+      //Исправил тут на toggle, но в таком случае sidebar получает оба класса.
+      //Я подумал, что 'sidebar-collapse' - закрытое состояние, а 'sidebar-open' - закрытое, 
+      //поэтому и сделал так, как в комментарии ниже.
+
+      // if(!sidebar.classList.contains('sidebar-open')){
+      //   sidebar.classList.add('sidebar-open');
+      //   sidebar.classList.remove('sidebar-collapse');
+      // } else {
+      //   sidebar.classList.remove('sidebar-open');
+      //   sidebar.classList.add('sidebar-collapse');        
+      // }
     })
   }
 
@@ -50,10 +57,12 @@ class Sidebar {
         loginButton.addEventListener('click', () => loginForm.open());
         registerButton.addEventListener('click', () => registerForm.open());
         logoutButton.addEventListener('click', () => {
-          User.logout({}, () => {
+          User.logout({}, (err, response) => {
             if(response.success){
               App.setState('init');
-            }
+            } else {
+              console.error(err);
+            }            
           })
         })
   }

@@ -44,10 +44,7 @@ class AsyncForm {
   getData() {
     let form = new FormData(this.element);
     let obj = {};
-
-    console.log(this.element);
     
-
     for(let item of form){                                         
       let name = item[0],
           value = item[1];

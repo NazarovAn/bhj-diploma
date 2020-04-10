@@ -56,6 +56,7 @@ class AccountsWidget {
    * */
   update() {
     const user = User.current();
+    this.clear();
 
     if(user){
       Account.list(user, (err, response) => {
@@ -63,8 +64,7 @@ class AccountsWidget {
           console.log(err);          
         return
         }
-
-        this.clear();
+        
         this.renderItem(response.data);
       });
     }
