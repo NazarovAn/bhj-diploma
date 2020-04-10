@@ -3,8 +3,7 @@ const createRequest = (options = {}) => {
         formData = new FormData;
         optionsData = options.data,
         url = options.url,
-        method = options.method,
-        headers = options.headers;       
+        method = options.method;
 
     xhr.withCredentials = true;
     xhr.responseType = options.responseType;
@@ -17,21 +16,11 @@ const createRequest = (options = {}) => {
       url = url.substring(0, url.length - 1);
     } else {
       for (let key in optionsData) {
-        formData.append(`${key}`, `${optionsData[key]}`);
+        formData.append(key, optionsData[key]);
       }
     }    
 
     xhr.open(method, url);
-
-    let xhrHeaderKey,
-        xhrHeader;
-
-    for (let key in headers) {
-      xhrHeaderKey = key;
-      xhrHeader = headers[key];
-    }
-
-    xhr.setRequestHeader(`${xhrHeaderKey}`, `${xhrHeader}`);
 
     try {
       if(method === 'GET'){      
@@ -40,12 +29,12 @@ const createRequest = (options = {}) => {
         xhr.send(formData);
       };
 
-      xhr.addEventListener('load', () => {  
-        options.callback(xhr.response.error, xhr.response.user);    
+      xhr.addEventListener('load', () => {
+        options.callback(xhr.response.error, xhr.response);    
       });
     } catch (error) {
       options.callback(error);    
     }
-
+    
     return xhr
   };
