@@ -6,6 +6,13 @@
       "password": "demo",
       "id": "1",
       "isAuthorized": false
+    },
+    {
+      "name": "test",
+      "email": "test@test",
+      "password": "test",
+      "id": "q2dmw1zkk8zt2q6s",
+      "isAuthorized": true
     }
   ],
   "accounts": [
@@ -23,18 +30,19 @@
       "name": "Бизнес",
       "user_id": "1",
       "id": "3"
+    },
+    {
+      "name": "Work",
+      "user_id": "q2dmw1zkk8zt2q6s",
+      "id": "q2dmw65ok8zt3com"
+    },
+    {
+      "name": "Side job",
+      "user_id": "q2dmw1zkk8zt2q6s",
+      "id": "q2dmw4y8k8zt3s40"
     }
   ],
   "transactions": [
-    {
-      "account_id": "1",
-      "created_at": "2019-09-15 10:24:02",
-      "id": "1",
-      "name": "Кредит",
-      "sum": 5000,
-      "type": "EXPENSE",
-      "user_id": "1"
-    },
     {
       "account_id": "1",
       "created_at": "2019-09-17 15:53:02",
@@ -160,6 +168,27 @@
       "sum": 300000,
       "type": "EXPENSE",
       "user_id": "1"
+    },
+    {
+      "type": "INCOME",
+      "name": "Salary",
+      "sum": 20000,
+      "account_id": "q2dmw65ok8zt3com",
+      "created_at": "2020-04-14T11:12:14.041Z"
+    },
+    {
+      "type": "INCOME",
+      "name": "Today",
+      "sum": 3000,
+      "account_id": "q2dmw4y8k8zt3s40",
+      "created_at": "2020-04-14T11:12:32.531Z"
+    },
+    {
+      "type": "EXPENSE",
+      "name": "Food",
+      "sum": 3000,
+      "account_id": "q2dmw65ok8zt3com",
+      "created_at": "2020-04-14T11:12:41.658Z"
     }
   ]
 }

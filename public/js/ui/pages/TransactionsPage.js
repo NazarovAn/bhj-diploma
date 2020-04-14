@@ -23,7 +23,7 @@ class TransactionsPage {
    * Вызывает метод render для отрисовки страницы
    * */
   update() {
-    this.render(this.lastOptions);    
+    this.render(this.lastOptions);     
   }
 
   /**
@@ -79,7 +79,9 @@ class TransactionsPage {
    * подтверждеия действия (с помощью confirm()).
    * По удалению транзакции вызовите метод App.update()
    * */
-  removeTransaction( id ) {                                          //Не работает
+  removeTransaction( id ) {   
+    console.log(id);
+                                           //Не работает
     if (confirm('Вы действительно хотите удалить счёт?')) {          //id транзакции в db.json не записываются, не понимаю почему.
       Transaction.remove(id, {}, (err, response) => {                //В чем еще может быть проблема не придумал.
         if(!response.success){                                       //Пробовал сделать альтернативный метод, понял, что не смогу 
@@ -87,7 +89,7 @@ class TransactionsPage {
           console.log(`response от removeTransaction(${id})`);    
           console.log(response);         
           return
-        }                                                               
+        }        
 
         App.update();
       })
@@ -109,7 +111,7 @@ class TransactionsPage {
           console.error(err);
         }        
         
-        this.renderTitle(response);
+        this.renderTitle(response.account.name);
       })
 
       Transaction.list(options, (err, response) => {
@@ -119,6 +121,8 @@ class TransactionsPage {
         }
 
         this.renderTransactions(response.data);
+        console.log(response.data);
+        
       })
     }
   }
@@ -136,9 +140,8 @@ class TransactionsPage {
   /**
    * Устанавливает заголовок в элемент .content-title
    * */
-  renderTitle( name ) { console.log(name);  //тоже не получилось, не понимаю почему Account.get присылает success: true и пустой массив.
-    let title = document.querySelector('.active').getElementsByTagName('span')[0].textContent;     //Костыль что бы хоть как-то работало.
-    document.querySelector('.content-title').textContent = title;
+  renderTitle( name ) {
+    document.querySelector('.content-title').textContent = name;
   }
 
   /**
@@ -189,7 +192,7 @@ class TransactionsPage {
                 </div>
               </div>
               <div class="col-md-2 transaction__controls">
-                  <button class="btn btn-danger transaction__remove" data-id="${item.account_id}">
+                  <button class="btn btn-danger transaction__remove" data-id="${ 'Тут нужен id транзакции' }">  
                       <i class="fa fa-trash"></i>  
                   </button>
               </div>
