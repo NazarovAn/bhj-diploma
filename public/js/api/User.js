@@ -69,10 +69,10 @@ class User {
           console.log(err);
           return         
         }
+        
+        this.setCurrent(response.user);
 
         callback(err, response);
-
-        this.setCurrent(response.user);
       }
     })
   }

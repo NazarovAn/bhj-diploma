@@ -42,12 +42,12 @@ class Entity {
    * (в зависимости от того, что наследуется от Entity)
    * */
   static get( id = '', data, callback = f => f ) {
-    let modifiedData = Object.assign(data, {id});
+    // let modifiedData = Object.assign(data, {id});
 
     createRequest({
-      data: modifiedData,
+      // data: modifiedData,
       method: 'GET',
-      url: Entity.HOST + this.URL,
+      url: Entity.HOST + this.URL + '/' + id,
       responseType: 'json',
       callback
     })
