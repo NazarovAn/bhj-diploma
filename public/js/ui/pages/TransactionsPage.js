@@ -79,15 +79,11 @@ class TransactionsPage {
    * подтверждеия действия (с помощью confirm()).
    * По удалению транзакции вызовите метод App.update()
    * */
-  removeTransaction( id ) {   
-    console.log(id);
-                                           //Не работает
-    if (confirm('Вы действительно хотите удалить счёт?')) {          //id транзакции в db.json не записываются, не понимаю почему.
-      Transaction.remove(id, {}, (err, response) => {                //В чем еще может быть проблема не придумал.
-        if(!response.success){                                       //Пробовал сделать альтернативный метод, понял, что не смогу 
-          console.log(err);                                          //удалить данные с сервера.
-          console.log(`response от removeTransaction(${id})`);    
-          console.log(response);         
+  removeTransaction( id ) {
+    if (confirm('Вы действительно хотите удалить счёт?')) {
+      Transaction.remove(id, {}, (err, response) => {
+        if(!response.success){
+          console.log(err);
           return
         }        
 
@@ -192,7 +188,7 @@ class TransactionsPage {
                 </div>
               </div>
               <div class="col-md-2 transaction__controls">
-                  <button class="btn btn-danger transaction__remove" data-id="${ 'Тут нужен id транзакции' }">  
+                  <button class="btn btn-danger transaction__remove" data-id="${item.id}">  
                       <i class="fa fa-trash"></i>  
                   </button>
               </div>
